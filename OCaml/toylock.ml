@@ -62,7 +62,7 @@ let node_grant (ds:system) (id:address) : system =
     let n' = {id=n.id; epoch=n.epoch; locked=false; n=n.n} in
     let grant_msg = {src=n.id; dst=(n.id+1) mod n.n; epoch=n.epoch+1} in
     let servers' = AddrMap.add id n' ds.servers in
-    let net' = AddrMap.add id grant_msg ds.net in
+    let net' = AddrMap.add grant_msg.dst grant_msg ds.net in
     {servers=servers'; net=net'; config=ds.config}
 
 

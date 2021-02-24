@@ -22,7 +22,7 @@ let rec dfs (root: run_tree) (curr_depth:int) (limit_depth:int) : run_tree =
             let acc = 
                 if accept_enabled curr_sys h then (node_accept curr_sys h)::acc else acc
             in
-            acc
+            gen_child_syslist curr_sys t acc
     in
     let rec gen_subtrees (syslist:system list) (acc:run_tree list) : run_tree list =
         (* Given a list of possible next states as syslist, return a list of run_tree 
@@ -63,7 +63,7 @@ let rec print_tree (t:run_tree) : unit =
 
 let _ = 
     print_endline "Toylock run generator";
-    let tree = search 3 6 in
+    let tree = search 3 10 in
     let _ = print_tree tree in
     print_endline "Done";
     ()
