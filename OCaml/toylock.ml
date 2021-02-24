@@ -87,3 +87,23 @@ let node_accept (ds:system) (id:address) : system =
     let servers' = AddrMap.add id n' ds.servers in
     {servers=servers'; net=ds.net; config=ds.config}
 
+
+(* Utilities *)
+
+let to_str_node (n:node) : string =
+    Printf.sprintf "%d : {%d, %b}" n.id n.epoch n.locked
+
+let to_str_mgs (msg:message) : string =
+    Printf.sprintf "{s=%d, d=%d, ep=%d}" msg.src msg.dst msg.epoch
+
+let to_str_net (net:network) : string =
+    let msg_strs = AddrMap.fold (fun k d a -> (to_str_mgs d)::a) net [] in
+    String.concat "\n" msg_strs
+
+let to_str_servers (servers:cluster) : string =
+    let node_strs = AddrMap.fold (fun k d a -> (to_str_node d)::a) servers [] in
+    String.concat "\n" node_strs
+
+let to_str_sys (sys:system) : string =
+    let strs = ["Servers:"; to_str_servers sys.servers; "Network:"; to_str_net sys.net] in
+    String.concat "\n" strs

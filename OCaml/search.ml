@@ -1,5 +1,4 @@
 open Toylock
-open Printf
 
 type run_tree = RNode of system * run_tree list
 
@@ -40,14 +39,31 @@ let rec dfs (root: run_tree) (curr_depth:int) (limit_depth:int) : run_tree =
     RNode(sys, (gen_subtrees child_syslist []))
         
 
+(* requires: n>0, limit_depth>0 *)
+(* returns: an execution tree *)
 let search (size:int) (limit_depth:int) : run_tree =
-    let init_state = init_system(size) in
+    let init_state = init_system size in
     let tree = dfs (RNode(init_state, [])) 0 limit_depth in
     tree
 
 
 (* Main function *)
+
+let rec print_tree (t:run_tree) : unit =
+    match t with 
+    |RNode(root, children) -> 
+        let _ = assert ((List.length children) <= 1) in
+        print_endline (to_str_sys root);
+        print_endline "";
+        match children with
+        | [] -> ()
+        | h :: t ->
+            print_tree  h
+
+
 let _ = 
     print_endline "Toylock run generator";
-    let _ = search 3 6 in
+    let tree = search 3 6 in
+    let _ = print_tree tree in
     print_endline "Done";
+    ()
