@@ -64,8 +64,11 @@ let rec print_tree (t:run_tree) : unit =
 
 
 let _ = 
-    print_endline "Toylock run generator";
-    let tree = search 3 100_000 in   (* Goes into stack overflow at 200_000 *)
+    let cond = Array.length Sys.argv = 2 in  
+    assert (if not cond then print_endline "No depth argument"; cond);
+    let d = int_of_string Sys.argv.(1) in
+    Printf.printf "Toylock run generator, depth = %d\n\n" d;
+    let tree = search 3 d in   (* Goes into stack overflow at 200_000 *)
     let _ = print_tree tree in
     print_endline "Done";
     ()
