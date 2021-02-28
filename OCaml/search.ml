@@ -1,6 +1,6 @@
 open Toylock
 
-type run_tree = RNode of system * run_tree list
+type run_tree = RNode of system * (run_tree list) ref
 
 
 (* requires: ids is a complete list of hosts in curr_sys *)
@@ -22,7 +22,7 @@ let rec gen_child_syslist (curr_sys:system) (ids:address list) (acc:system list)
 (* returns: an execution tree with initial state root and depth up to limit_depth *)
 let rec dfs (root: system) (curr_depth:int) (limit_depth:int) : run_tree =
     (* Base case *)
-    if curr_depth = limit_depth then RNode(root, [])
+    if curr_depth = limit_depth then RNode(root, ref [])
     else
     (* Recursive case *)
     (* First compute the children list of root *)
@@ -35,7 +35,7 @@ let rec dfs (root: system) (curr_depth:int) (limit_depth:int) : run_tree =
          * that represents the list of children/subtrees of root 
          *)
         match syslist with
-        | [] -> RNode(parent, acc)
+        | [] -> RNode(parent, ref acc)
         | h :: t -> 
             let subtree = dfs h (curr_depth + 1) limit_depth in
             gen_subtrees parent t curr_depth limit_depth (subtree::acc)
@@ -54,10 +54,10 @@ let search (size:int) (limit_depth:int) : run_tree =
 let rec print_tree (t:run_tree) : unit =
     match t with 
     |RNode(root, children) -> 
-        let _ = assert ((List.length children) <= 1) in
+        let _ = assert ((List.length !children) <= 1) in
         print_endline (to_str_sys root);
         print_endline "";
-        match children with
+        match !children with
         | [] -> ()
         | h :: t ->
             print_tree  h
