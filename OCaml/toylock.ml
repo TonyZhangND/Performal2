@@ -59,7 +59,7 @@ let grant_enabled (ds:system) (id:address) : bool =
 let node_grant (ds:system) (id:address) : system =
     let n = AddrMap.find id ds.servers in
     let _ = assert (grant_enabled ds id) in 
-    let n' = {id=n.id; epoch=n.epoch; locked=false; n=n.n} in
+    let n' = { n with locked=false } in 
     let grant_msg = {src=n.id; dst=(n.id+1) mod n.n; epoch=n.epoch+1} in
     let servers' = AddrMap.add id n' ds.servers in
     let net' = AddrMap.add grant_msg.dst grant_msg ds.net in
@@ -83,7 +83,8 @@ let node_accept (ds:system) (id:address) : system =
     let n = AddrMap.find id ds.servers in
     let _ = assert (accept_enabled ds id) in 
     let accept_msg = AddrMap.find id ds.net in
-    let n' = {id=n.id; epoch=accept_msg.epoch; locked=true; n=n.n} in
+    let n' = { n with   epoch=accept_msg.epoch;
+                        locked=true } in
     let servers' = AddrMap.add id n' ds.servers in
     {servers=servers'; net=ds.net; config=ds.config}
 
